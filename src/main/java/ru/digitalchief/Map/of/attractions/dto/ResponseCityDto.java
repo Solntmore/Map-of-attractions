@@ -11,10 +11,16 @@ import java.util.Set;
  */
 @Data
 public class ResponseCityDto implements Serializable {
+
     private final Long id;
+
     private final String name;
+
     private final Long population;
+
     private final int area;
+
     private final String website;
+
     private Set<ShortAttractionDto> attractions;
 }

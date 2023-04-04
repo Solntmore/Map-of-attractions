@@ -1,5 +1,6 @@
 package ru.digitalchief.Map.of.attractions.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.digitalchief.Map.of.attractions.model.City;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
 /**
  * A DTO for the {@link City} entity
  */
+@Builder
 @Data
 public class RequestCityDto implements Serializable {
 

@@ -9,6 +9,8 @@ import java.io.Serializable;
  */
 @Data
 public class ShortAttractionDto implements Serializable {
+
     private final Long id;
+
     private final String name;
 }
