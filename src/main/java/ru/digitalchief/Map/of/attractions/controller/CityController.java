@@ -49,14 +49,14 @@ public class CityController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseCityDto> getAttractionById(@PathVariable Long id) {
+    public ResponseEntity<ResponseCityDto> getCityById(@PathVariable Long id) {
         log.debug("A Get/cities/{} request was received. Get city by id {}", id, id);
 
         return ResponseEntity.status(HttpStatus.OK).body(cityService.getCityById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAttractionById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCityById(@PathVariable Long id) {
         log.debug("A Delete/cities/{} request was received. Delete city by id {}", id, id);
         cityService.deleteCityById(id);
 
