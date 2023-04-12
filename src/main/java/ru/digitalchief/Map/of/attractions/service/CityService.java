@@ -1,6 +1,9 @@
 package ru.digitalchief.Map.of.attractions.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class CityService {
         return cityMapper.toResponseDto(savedCity);
     }
 
+    @CachePut(cacheNames = {"citiesCache"}, key = "#id")
     public ResponseCityDto updateCity(RequestCityDto cityDto, Long id) {
         City city = cityRepository.findById(id).orElseThrow(() ->
                 new CityNotFoundException("City with id " + id + " is not found"));
@@ -53,6 +57,7 @@ public class CityService {
         }
     }
 
+    @Cacheable(cacheNames = {"citiesCache"}, key = "#id")
     public ResponseCityDto getCityById(Long id) {
         City city = cityRepository.findById(id).orElseThrow(() ->
                 new CityNotFoundException("City with id " + id + " is not found"));
@@ -60,6 +65,7 @@ public class CityService {
         return cityMapper.toResponseDto(city);
     }
 
+    @CacheEvict(cacheNames = {"citiesCache"}, key = "#id")
     public void deleteCityById(Long id) {
         if (!cityRepository.existsById(id)) {
             throw new CityNotFoundException("City with id: " + id + " is not found");
