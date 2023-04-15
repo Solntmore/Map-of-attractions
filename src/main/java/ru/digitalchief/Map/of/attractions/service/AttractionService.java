@@ -1,6 +1,10 @@
 package ru.digitalchief.Map.of.attractions.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.digitalchief.Map.of.attractions.dto.RequestAttractionDto;
@@ -27,6 +31,11 @@ public class AttractionService {
 
     private final AttractionMapper attractionMapper;
 
+    @Caching(evict = {
+            @CacheEvict(value = {"cityByIdCache"}, key = "#attractionDto.cityId"),
+            @CacheEvict(value = {"citiesListCache"}, allEntries = true),
+            @CacheEvict(value = {"attractionsListCache"}, allEntries = true)
+    })
     public ResponseAttractionDto addAttraction(RequestAttractionDto attractionDto) {
         City city = cityRepository.findById(attractionDto.getCityId()).orElseThrow(() ->
                 new CityNotFoundException("City for this attraction is not found"));
@@ -39,6 +48,12 @@ public class AttractionService {
 
     }
 
+    @Caching(put = {
+            @CachePut(cacheNames = {"attractionByIdCache"}, key = "#id")},
+            evict = {
+            @CacheEvict(cacheNames = {"attractionsListCache"}, allEntries = true),
+            @CacheEvict(value = {"cityByIdCache"}, key = "#attractionDto.cityId"),
+            @CacheEvict(value = {"citiesListCache"}, allEntries = true)})
     public ResponseAttractionDto updateAttraction(RequestAttractionDto attractionDto, Long id) {
         Attraction attraction = attractionRepository.findById(id).orElseThrow(() ->
                 new AttractionNotFoundException("Attraction with id: " + id + " is not found"));
@@ -52,6 +67,7 @@ public class AttractionService {
         return attractionMapper.toFullDto(attractionRepository.save(updateAttraction));
     }
 
+    @Cacheable("attractionsListCache")
     public List<ResponseAttractionDto> getAttractions(Status status, PageRequest of) {
 
         return attractionRepository.findAllByStatus(status, of)
@@ -60,6 +76,7 @@ public class AttractionService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(cacheNames = {"attractionByIdCache"}, key = "#id")
     public ResponseAttractionDto getAttractionById(Long id) {
         Attraction attraction = attractionRepository.findById(id).orElseThrow(() ->
                 new AttractionNotFoundException("Attraction with id: " + id + " is not found"));
@@ -67,6 +84,12 @@ public class AttractionService {
         return attractionMapper.toFullDto(attraction);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = {"attractionByIdCache"}, key = "#id"),
+            @CacheEvict(cacheNames = {"attractionsListCache"}, allEntries = true),
+            @CacheEvict(value = "cityByIdCache", allEntries = true),
+            @CacheEvict(value = {"citiesListCache"}, allEntries = true)
+    })
     public void deleteAttractionById(Long id) {
         if (!attractionRepository.existsById(id)) {
             throw new AttractionNotFoundException("Attraction with id: " + id + " is not found");

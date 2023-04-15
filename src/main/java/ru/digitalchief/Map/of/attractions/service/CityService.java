@@ -1,6 +1,10 @@
 package ru.digitalchief.Map.of.attractions.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,12 +27,23 @@ public class CityService {
     private final CityRepository cityRepository;
     private final CityMapper cityMapper;
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = {"citiesListCache"}, allEntries = true)
+            })
     public ResponseCityDto addCity(RequestCityDto cityDto) {
         City savedCity = cityRepository.save(cityMapper.toEntity(cityDto));
 
         return cityMapper.toResponseDto(savedCity);
     }
 
+    @Caching(put = {
+            @CachePut(cacheNames = {"cityByIdCache"}, key = "#id"),
+    },
+            evict = {
+            @CacheEvict(cacheNames = {"citiesListCache"}, allEntries = true),
+            @CacheEvict(cacheNames = {"attractionByIdCache"}, allEntries = true),
+            @CacheEvict(cacheNames = {"attractionsListCache"}, allEntries = true)
+            })
     public ResponseCityDto updateCity(RequestCityDto cityDto, Long id) {
         City city = cityRepository.findById(id).orElseThrow(() ->
                 new CityNotFoundException("City with id " + id + " is not found"));
@@ -37,6 +52,7 @@ public class CityService {
         return cityMapper.toResponseDto(cityRepository.save(updateCity));
     }
 
+    @Cacheable("citiesListCache")
     public List<ResponseCityDto> getCities(SortCriteria sort, SortDirection direction, int from, int size) {
         if (direction.equals(SortDirection.ASC)) {
 
@@ -53,6 +69,7 @@ public class CityService {
         }
     }
 
+    @Cacheable(cacheNames = {"cityByIdCache"}, key = "#id")
     public ResponseCityDto getCityById(Long id) {
         City city = cityRepository.findById(id).orElseThrow(() ->
                 new CityNotFoundException("City with id " + id + " is not found"));
@@ -60,6 +77,12 @@ public class CityService {
         return cityMapper.toResponseDto(city);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = {"cityByIdCache"}, key = "#id"),
+            @CacheEvict(cacheNames = {"citiesListCache"}, allEntries = true),
+            @CacheEvict(cacheNames = {"attractionByIdCache"}, allEntries = true),
+            @CacheEvict(cacheNames = {"attractionsListCache"}, allEntries = true)
+    })
     public void deleteCityById(Long id) {
         if (!cityRepository.existsById(id)) {
             throw new CityNotFoundException("City with id: " + id + " is not found");
