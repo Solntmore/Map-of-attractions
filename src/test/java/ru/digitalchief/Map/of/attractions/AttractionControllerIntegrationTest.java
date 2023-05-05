@@ -12,8 +12,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import ru.digitalchief.Map.of.attractions.dto.RequestAttractionDto;
-import ru.digitalchief.Map.of.attractions.model.Status;
+import ru.digitalchief.Map.of.attractions.client.dto.RequestAttractionDto;
+import ru.digitalchief.Map.of.attractions.client.model.Status;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
