@@ -9,8 +9,8 @@
 
 ### **Технические особенности.**
 
-Проект на Java 11 + Spring Boot, RESTful API, сборщик Maven. Hibernate,
-JPA repository, PostgreSQL, MapStruct. Контейнеризация через Docker. Кэширование на Redis.
+Микросервисный проект на Java 11 + Spring Boot, RESTful API, сборщик Maven. Hibernate,
+JPA repository, PostgreSQL, MapStruct. Контейнеризация через Docker. Кэширование на Redis. Авторизация с JWT токеном.
 
 ### **Инструкция по сборке:**
 
@@ -25,8 +25,11 @@ JPA repository, PostgreSQL, MapStruct. Контейнеризация через
    MapOfAttractionsApplication.
 6) Если вы хотите воспользоваться БД PostgreSQL без установки на ПК, то сгенерируйте образ Docker зайдя в файл
    docker-compose.yml и нажав на двойной зеленый треугольник рядом с названием "services".
-7) Для проверки запросов можете воспользоваться готовыми postman тестами, они находятся в папке postman.
-8) Также доступен swagger, достаточно просто перейти по ссылке: http://localhost:8080/swagger-ui/index.html#
+7) В проекте используется авторизация с JWT токеном. Вы можете отключить ее, для упрощенного тестирования, для этого в 
+файле по пути MainServer/src/main/resources/application.properties установите auth.enabled=true для любого из профилей 
+запуска, который хотите использовать.
+8) Также доступен swagger, достаточно просто перейти по ссылке: http://localhost:8080/swagger-ui/index.html#, 
+предварительно отключив авторизацию в соответствии с пунктом 7
 
 ### **Описание зависимостей:**
 
